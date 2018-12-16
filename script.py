@@ -62,8 +62,6 @@ class SyncManager:
         for t in tasks:
             res.append(t)
 
-        print(tasks, xml.tostring(res))
-
     def sync_files(self, resources_changed):
         tokens = {res: self.http.lock(res) for res in self.data['resources'] + [self.data['main']]}
 
