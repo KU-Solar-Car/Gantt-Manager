@@ -4,10 +4,11 @@ import script
 manager = script.SyncManager('info.json')
 
 while True:
-    if manager.files_have_changed():
+    main_changed, resources_changed = manager.files_have_changed()
+    if resources_changed or main_changed:
         print('Updating...')
-        manager.sync_files()
+        manager.sync_files(resources_changed)
     else:
         print('Nothing has changed.')
-    time.sleep(20)
+    time.sleep(5)
     
