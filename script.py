@@ -49,7 +49,7 @@ class SyncManager:
         self.etags = {}
         self.data = self.load_json(data_path)
         self.http = HttpInterface(self.data)
-        self.etag_cleaner = re.compile('\"(.*)\"$')
+        self.etag_cleaner = re.compile('^.*\"(.*)\"$')
 
     def load_json(self, path):
         with open(path) as f:

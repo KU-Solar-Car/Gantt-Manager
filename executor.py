@@ -1,7 +1,7 @@
 import time
 import script
 
-manager = script.SyncManager('info.json')
+manager = script.SyncManager('home/ericdhiggins/Gantt-Manager/info.json')
 
 while True:
     main_changed, resources_changed = manager.files_have_changed()
@@ -10,5 +10,5 @@ while True:
         manager.sync_files(resources_changed)
     else:
         print('Nothing has changed.')
-    time.sleep(5)
+    time.sleep(20)
     
