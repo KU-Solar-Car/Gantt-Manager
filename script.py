@@ -12,6 +12,8 @@ class HttpInterface:
         self.data = data
         self.token_pattern = re.compile('^.*<D:locktoken><D:href>opaquelocktoken:([A-z\d-]*)<\/D:href>\n?<\/D:locktoken>')
 
+        if self.data['base_url'][-1] == '/': self.data['base_url'] = self.data['base_url'][:-1]
+
     def lock(self, resource):
         _, data = self.__make_request('LOCK', resource, {'Accept': '*/*', 'Content-Type': 'application/xml'}, body=self.data['body'].replace('{username}', self.data['username']))
         data = data.replace('\n', '')
@@ -29,7 +31,7 @@ class HttpInterface:
 
     def put(self, resource, content, lock_token):
         if resource.startswith('/'): resource = resource[1:]
-        self.__make_request('PUT', resource, {'Accept': '*/*', 'If': '<http://' + self.data['ip'] + '/' + resource  + '> (<opaquelocktoken:' + lock_token + '>)'}, body=content)
+        self.__make_request('PUT', resource, {'Accept': '*/*', 'If': '<' + self.data['base_url'] + '/' + resource  + '> (<opaquelocktoken:' + lock_token + '>)'}, body=content)
     
     def __make_request(self, method, resource, headers, body=None):
         if resource.startswith('/'): resource = resource[1:]
