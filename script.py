@@ -49,6 +49,7 @@ class SyncManager:
         self.etags = {}
         self.data = self.load_json(data_path)
         self.http = HttpInterface(self.data)
+        self.etag_cleaner = re.compile('\"(.*)\"$')
 
     def load_json(self, path):
         with open(path) as f:
@@ -96,14 +97,17 @@ class SyncManager:
 
         for res, token in tokens.items():
             if token: self.http.unlock(res, token)
-            self.etags[res] = self.http.get(res)[0]['ETag']
+            self.etags[res] = self.clean_etag(self.http.get(res)[0]['ETag'])
+
+    def clean_etag(self, etag):
+        return self.etag_cleaner.match(etag).group(1)
 
     def main_changed(self):
-        etag = self.http.get(self.data['main'])[0]['ETag']
+        etag = self.clean_etag(self.http.get(self.data['main'])[0]['ETag'])
         return self.data['main'] not in self.etags or self.etags[self.data['main']] != etag
 
     def resources_changed(self):
-        etags = {res: self.http.get(res)[0]['ETag'] for res in self.data['resources']}
+        etags = {res: self.clean_etag(self.http.get(res)[0]['ETag']) for res in self.data['resources']}
         for k, v in etags.items():
             if not k in self.etags or self.etags[k] != v:
                 return True
